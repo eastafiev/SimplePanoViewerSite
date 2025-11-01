@@ -1,0 +1,8 @@
+﻿{
+  "recommendations": [
+    "formulahendry.auto-rename-tag",
+    "ritwickdey.LiveServer",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ]
+}
