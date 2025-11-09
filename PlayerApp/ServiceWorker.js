@@ -1,4 +1,4 @@
-const cacheName = "RTVR-SimplePanoViewerWeb-0.1.0.28";
+const cacheName = "RTVR-SimplePanoViewerWeb-0.1.0.30";
 const contentToCache = [
     "Build/WebGL Builds.loader.js",
     "Build/WebGL Builds.framework.js.unityweb",
