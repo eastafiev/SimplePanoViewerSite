@@ -12,7 +12,7 @@
   </head>
   <body>
     <div id="unity-container">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1" allowfullscreen></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -106,11 +106,11 @@
       }
 
         // position the diagnostics icon in the corner on the canvas
-        let diagnostics_icon = document.getElementById("diagnostics-icon");
-        diagnostics_icon.style.position = "fixed";
-        diagnostics_icon.style.bottom = "10px";
-        diagnostics_icon.style.right = "0px";
-        canvas.after(diagnostics_icon);
+        // let diagnostics_icon = document.getElementById("diagnostics-icon");
+        // diagnostics_icon.style.position = "fixed";
+        // diagnostics_icon.style.bottom = "10px";
+        // diagnostics_icon.style.right = "0px";
+        // canvas.after(diagnostics_icon);
 
       loadingBar.style.display = "block";
 
