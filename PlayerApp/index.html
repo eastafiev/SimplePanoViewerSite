@@ -52,8 +52,29 @@
       if (canvas && canvas.requestFullscreen) {
         var originalRequestFullscreen = canvas.requestFullscreen.bind(canvas);
         canvas.requestFullscreen = function(options) {
-          return originalRequestFullscreen(options).catch(function(err) {
-            console.log('Canvas fullscreen failed, trying document element:', err);
+          try {
+            var result = originalRequestFullscreen(options);
+            // Ensure it's a Promise before calling .catch
+            var promise = (result && typeof result.catch === 'function')
+              ? result
+              : Promise.resolve(result);
+            return promise.catch(function(err) {
+              console.log('Canvas fullscreen failed, trying document element:', err);
+              // Fallback: try fullscreen on document element
+              var elem = document.documentElement;
+              if (elem.requestFullscreen) {
+                return elem.requestFullscreen(options);
+              } else if (elem.webkitRequestFullscreen) {
+                return elem.webkitRequestFullscreen();
+              } else if (elem.mozRequestFullScreen) {
+                return elem.mozRequestFullScreen(options);
+              } else if (elem.msRequestFullscreen) {
+                return elem.msRequestFullscreen();
+              }
+              throw err;
+            });
+          } catch (err) {
+            console.log('Canvas fullscreen error, trying document element:', err);
             // Fallback: try fullscreen on document element
             var elem = document.documentElement;
             if (elem.requestFullscreen) {
@@ -65,8 +86,8 @@
             } else if (elem.msRequestFullscreen) {
               return elem.msRequestFullscreen();
             }
-            throw err;
-          });
+            return Promise.reject(err);
+          }
         };
       }
 
@@ -193,8 +214,29 @@
               // Wrap existing requestFullscreen with error handling
               var originalRequest = unityCanvas.requestFullscreen.bind(unityCanvas);
               unityCanvas.requestFullscreen = function(options) {
-                return originalRequest(options).catch(function(err) {
-                  console.log('Unity canvas fullscreen failed, trying fallback:', err);
+                try {
+                  var result = originalRequest(options);
+                  // Ensure it's a Promise before calling .catch
+                  var promise = (result && typeof result.catch === 'function')
+                    ? result
+                    : Promise.resolve(result);
+                  return promise.catch(function(err) {
+                    console.log('Unity canvas fullscreen failed, trying fallback:', err);
+                    // Try document element as fallback
+                    var docElem = document.documentElement;
+                    if (docElem.requestFullscreen) {
+                      return docElem.requestFullscreen(options);
+                    } else if (docElem.webkitRequestFullscreen) {
+                      return docElem.webkitRequestFullscreen();
+                    } else if (docElem.mozRequestFullScreen) {
+                      return docElem.mozRequestFullScreen(options);
+                    } else if (docElem.msRequestFullscreen) {
+                      return docElem.msRequestFullscreen();
+                    }
+                    throw err;
+                  });
+                } catch (err) {
+                  console.log('Unity canvas fullscreen error, trying fallback:', err);
                   // Try document element as fallback
                   var docElem = document.documentElement;
                   if (docElem.requestFullscreen) {
@@ -206,8 +248,8 @@
                   } else if (docElem.msRequestFullscreen) {
                     return docElem.msRequestFullscreen();
                   }
-                  throw err;
-                });
+                  return Promise.reject(err);
+                }
               };
             }
           }
