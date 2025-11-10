@@ -1,5 +1,54 @@
 body { padding: 0; margin: 0 }
-#unity-container { position: fixed; width: 100%; height: 100%; }
+#top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: #231F20;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  z-index: 1000;
+}
+#top-bar-logo {
+  height: 30px;
+  width: auto;
+  margin-right: 10px;
+}
+#top-bar-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+#microsoft-store-button {
+  color: #ffffff;
+  background: #0078d4;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#windows-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+#microsoft-store-button:hover {
+  background: #106ebe;
+}
+#microsoft-store-button:active {
+  background: #005a9e;
+}
+#unity-container { position: fixed; width: 100%; height: calc(100% - 40px); top: 40px; }
 #unity-canvas { width: 100%; height: 100%; background: #231F20 }
 #unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none }
 #unity-logo { width: 150px; height: 130px; background: url('unity-logo-dark.png') no-repeat center; overflow: hidden; }

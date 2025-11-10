@@ -11,6 +11,19 @@
     <script src="TemplateData/diagnostics.js"></script>
   </head>
   <body>
+    <div id="top-bar">
+      <img id="top-bar-logo" src="TemplateData/unity-logo-dark.png" alt="Logo">
+      <span id="top-bar-title">Simple Panorama Viewer</span>
+      <a id="microsoft-store-button" href="ms-windows-store://pdp/?productid=9PPD1BZ9PKBJ">
+        <svg id="windows-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0H7V7H0V0Z" fill="currentColor"/>
+          <path d="M9 0H16V7H9V0Z" fill="currentColor"/>
+          <path d="M0 9H7V16H0V9Z" fill="currentColor"/>
+          <path d="M9 9H16V16H9V9Z" fill="currentColor"/>
+        </svg>
+        Get Desktop App
+      </a>
+    </div>
     <div id="unity-container">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -25,6 +38,18 @@
     </div>
     </div>
     <script>
+      // Hide Microsoft Store button if not on Windows
+      (function() {
+        var isWindows = navigator.platform.indexOf('Win') > -1 ||
+                       navigator.userAgent.indexOf('Windows') > -1;
+        if (!isWindows) {
+          var storeButton = document.getElementById('microsoft-store-button');
+          if (storeButton) {
+            storeButton.style.display = 'none';
+          }
+        }
+      })();
+
       window.addEventListener("load", function () {
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("ServiceWorker.js");
