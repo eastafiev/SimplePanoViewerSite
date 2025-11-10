@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="Permissions-Policy" content="fullscreen=*">
+    <meta http-equiv="Permissions-Policy" content="fullscreen=*">
     <title>SimplePanoViewer</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
@@ -114,6 +115,7 @@
       // Patch canvas.requestFullscreen to handle redirect scenarios
       // This must be done BEFORE Unity loads
       // For redirect scenarios, try document element first as canvas may be blocked
+      // For redirect scenarios, try document element first as canvas may be blocked
       if (canvas && canvas.requestFullscreen) {
         var originalRequestFullscreen = canvas.requestFullscreen.bind(canvas);
         canvas.requestFullscreen = function(options) {
@@ -149,7 +151,17 @@
                 console.log('Canvas fullscreen blocked by permissions, trying document element');
                 return tryFullscreen(document.documentElement, options);
               }
+              // If it's a permissions policy error, try document element directly
+              if (err && (err.message && err.message.includes('permissions policy') ||
+                          err.name === 'NotAllowedError' ||
+                          err.toString().includes('permissions policy'))) {
+                console.log('Canvas fullscreen blocked by permissions, trying document element');
+                return tryFullscreen(document.documentElement, options);
+              }
               console.log('Canvas fullscreen failed, trying document element:', err);
+              return tryFullscreen(document.documentElement, options).catch(function(fallbackErr) {
+                throw err; // Throw original error if fallback also fails
+              });
               return tryFullscreen(document.documentElement, options).catch(function(fallbackErr) {
                 throw err; // Throw original error if fallback also fails
               });
@@ -162,7 +174,17 @@
               console.log('Canvas fullscreen blocked by permissions, trying document element');
               return tryFullscreen(document.documentElement, options);
             }
+            // Synchronous error - try document element
+            if (err && (err.message && err.message.includes('permissions policy') ||
+                        err.name === 'NotAllowedError' ||
+                        err.toString().includes('permissions policy'))) {
+              console.log('Canvas fullscreen blocked by permissions, trying document element');
+              return tryFullscreen(document.documentElement, options);
+            }
             console.log('Canvas fullscreen error, trying document element:', err);
+            return tryFullscreen(document.documentElement, options).catch(function(fallbackErr) {
+              return Promise.reject(err); // Throw original error if fallback also fails
+            });
             return tryFullscreen(document.documentElement, options).catch(function(fallbackErr) {
               return Promise.reject(err); // Throw original error if fallback also fails
             });
@@ -309,6 +331,23 @@
                 return Promise.reject(new Error('Fullscreen API not supported'));
               }
 
+
+              // Helper function for Unity canvas fullscreen
+              function tryFullscreenForUnity(elem, opts) {
+                if (elem.requestFullscreen) {
+                  return elem.requestFullscreen(opts);
+                } else if (elem.webkitRequestFullscreen) {
+                  return elem.webkitRequestFullscreen();
+                } else if (elem.webkitEnterFullscreen) {
+                  return elem.webkitEnterFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                  return elem.mozRequestFullScreen(opts);
+                } else if (elem.msRequestFullscreen) {
+                  return elem.msRequestFullscreen();
+                }
+                return Promise.reject(new Error('Fullscreen API not supported'));
+              }
+
               unityCanvas.requestFullscreen = function(options) {
                 // If we're in a redirected context, try document element first
                 if (isRedirectedContext) {
@@ -342,7 +381,17 @@
                       console.log('Unity canvas fullscreen blocked by permissions, trying document element');
                       return tryFullscreenForUnity(document.documentElement, options);
                     }
+                    // If it's a permissions policy error, try document element directly
+                    if (err && (err.message && err.message.includes('permissions policy') ||
+                                err.name === 'NotAllowedError' ||
+                                err.toString().includes('permissions policy'))) {
+                      console.log('Unity canvas fullscreen blocked by permissions, trying document element');
+                      return tryFullscreenForUnity(document.documentElement, options);
+                    }
                     console.log('Unity canvas fullscreen failed, trying fallback:', err);
+                    return tryFullscreenForUnity(document.documentElement, options).catch(function(fallbackErr) {
+                      throw err; // Throw original error if fallback also fails
+                    });
                     return tryFullscreenForUnity(document.documentElement, options).catch(function(fallbackErr) {
                       throw err; // Throw original error if fallback also fails
                     });
@@ -355,7 +404,17 @@
                     console.log('Unity canvas fullscreen blocked by permissions, trying document element');
                     return tryFullscreenForUnity(document.documentElement, options);
                   }
+                  // Synchronous error - try document element
+                  if (err && (err.message && err.message.includes('permissions policy') ||
+                              err.name === 'NotAllowedError' ||
+                              err.toString().includes('permissions policy'))) {
+                    console.log('Unity canvas fullscreen blocked by permissions, trying document element');
+                    return tryFullscreenForUnity(document.documentElement, options);
+                  }
                   console.log('Unity canvas fullscreen error, trying fallback:', err);
+                  return tryFullscreenForUnity(document.documentElement, options).catch(function(fallbackErr) {
+                    return Promise.reject(err); // Throw original error if fallback also fails
+                  });
                   return tryFullscreenForUnity(document.documentElement, options).catch(function(fallbackErr) {
                     return Promise.reject(err); // Throw original error if fallback also fails
                   });
