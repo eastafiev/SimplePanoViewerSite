@@ -58,3 +58,14 @@ body { padding: 0; margin: 0 }
 #unity-progress-bar-full { position: absolute; left: 0; top: 0; margin-left: 0px; margin-right: 0px; width: 0%; height: 100%; margin-top: 0px; background: url('progress-bar-full-blue.png') no-repeat left center; background-size: 100% 100%; overflow: hidden; }
 #unity-warning { position: absolute; left: 50%; top: 5%; transform: translate(-50%); background: rgb(3, 133, 255); padding: 10px; display: none }
 
+/* Hide top bar on mobile devices */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  #top-bar {
+    display: none;
+  }
+  #unity-container {
+    height: 100%;
+    top: 0;
+  }
+}
+
