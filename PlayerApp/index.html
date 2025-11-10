@@ -47,6 +47,45 @@
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
 
+      // Patch canvas.requestFullscreen to handle redirect scenarios
+      // This must be done BEFORE Unity loads
+      if (canvas && canvas.requestFullscreen) {
+        var originalRequestFullscreen = canvas.requestFullscreen.bind(canvas);
+        canvas.requestFullscreen = function(options) {
+          return originalRequestFullscreen(options).catch(function(err) {
+            console.log('Canvas fullscreen failed, trying document element:', err);
+            // Fallback: try fullscreen on document element
+            var elem = document.documentElement;
+            if (elem.requestFullscreen) {
+              return elem.requestFullscreen(options);
+            } else if (elem.webkitRequestFullscreen) {
+              return elem.webkitRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+              return elem.mozRequestFullScreen(options);
+            } else if (elem.msRequestFullscreen) {
+              return elem.msRequestFullscreen();
+            }
+            throw err;
+          });
+        };
+      }
+
+      // Also add cross-browser fullscreen support
+      if (!canvas.requestFullscreen) {
+        canvas.requestFullscreen = function(options) {
+          if (this.webkitRequestFullscreen) {
+            return this.webkitRequestFullscreen();
+          } else if (this.webkitEnterFullscreen) {
+            return this.webkitEnterFullscreen();
+          } else if (this.mozRequestFullScreen) {
+            return this.mozRequestFullScreen(options);
+          } else if (this.msRequestFullscreen) {
+            return this.msRequestFullscreen();
+          }
+          return Promise.reject(new Error('Fullscreen API not supported'));
+        };
+      }
+
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
       // If type=='warning', a yellow highlight color is used.
@@ -118,6 +157,60 @@
           document.getElementById("diagnostics-icon").onclick = () => {
               unityDiagnostics.openDiagnosticsDiv(unityInstance.GetMetricsInfo);
           };
+
+          // Patch Unity's Module to ensure canvas has proper fullscreen support
+          // This runs after Unity loads, so we can access Module
+          if (typeof Module !== 'undefined' && Module.canvas) {
+            var unityCanvas = Module.canvas;
+
+            // Ensure the canvas has requestFullscreen with proper error handling
+            if (unityCanvas && !unityCanvas.requestFullscreen) {
+              unityCanvas.requestFullscreen = function(options) {
+                var elem = this;
+                if (elem.webkitRequestFullscreen) {
+                  return elem.webkitRequestFullscreen();
+                } else if (elem.webkitEnterFullscreen) {
+                  return elem.webkitEnterFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                  return elem.mozRequestFullScreen(options);
+                } else if (elem.msRequestFullscreen) {
+                  return elem.msRequestFullscreen();
+                }
+                // Fallback to document element
+                var docElem = document.documentElement;
+                if (docElem.requestFullscreen) {
+                  return docElem.requestFullscreen(options);
+                } else if (docElem.webkitRequestFullscreen) {
+                  return docElem.webkitRequestFullscreen();
+                } else if (docElem.mozRequestFullScreen) {
+                  return docElem.mozRequestFullScreen(options);
+                } else if (docElem.msRequestFullscreen) {
+                  return docElem.msRequestFullscreen();
+                }
+                return Promise.reject(new Error('Fullscreen API not supported'));
+              };
+            } else if (unityCanvas && unityCanvas.requestFullscreen) {
+              // Wrap existing requestFullscreen with error handling
+              var originalRequest = unityCanvas.requestFullscreen.bind(unityCanvas);
+              unityCanvas.requestFullscreen = function(options) {
+                return originalRequest(options).catch(function(err) {
+                  console.log('Unity canvas fullscreen failed, trying fallback:', err);
+                  // Try document element as fallback
+                  var docElem = document.documentElement;
+                  if (docElem.requestFullscreen) {
+                    return docElem.requestFullscreen(options);
+                  } else if (docElem.webkitRequestFullscreen) {
+                    return docElem.webkitRequestFullscreen();
+                  } else if (docElem.mozRequestFullScreen) {
+                    return docElem.mozRequestFullScreen(options);
+                  } else if (docElem.msRequestFullscreen) {
+                    return docElem.msRequestFullscreen();
+                  }
+                  throw err;
+                });
+              };
+            }
+          }
         }).catch((message) => {
           alert(message);
         });
