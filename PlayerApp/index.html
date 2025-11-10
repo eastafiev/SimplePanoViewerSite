@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Permissions-Policy" content="fullscreen=(self)">
     <title>SimplePanoViewer</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
@@ -104,13 +105,6 @@
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
       }
-
-        // position the diagnostics icon in the corner on the canvas
-        // let diagnostics_icon = document.getElementById("diagnostics-icon");
-        // diagnostics_icon.style.position = "fixed";
-        // diagnostics_icon.style.bottom = "10px";
-        // diagnostics_icon.style.right = "0px";
-        // canvas.after(diagnostics_icon);
 
       loadingBar.style.display = "block";
 
