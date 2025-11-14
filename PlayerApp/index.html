@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <base href="/PlayerApp/">
     <title>SimplePanoViewer</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
@@ -38,6 +39,16 @@
     </div>
     </div>
     <script>
+      // Replace URL in address bar to hide /PlayerApp/index.html and /PlayerApp
+      if (window.history && window.history.replaceState) {
+        var pathname = window.location.pathname;
+        // Replace /PlayerApp/index.html or /PlayerApp/ with just /
+        var cleanUrl = pathname.replace(/\/PlayerApp(\/index\.html)?\/?$/, '/');
+        if (cleanUrl !== pathname) {
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+      }
+
       // Hide Microsoft Store button if not on Windows
       (function() {
         var isWindows = navigator.platform.indexOf('Win') > -1 ||
