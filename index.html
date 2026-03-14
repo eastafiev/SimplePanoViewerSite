@@ -25,6 +25,25 @@
     <meta name="twitter:title" content="Simple Panorama Viewer - Review Offline Panorama Images">
     <meta name="twitter:description" content="Review offline panorama images in your browser. Load multiple images, switch between them, take snapshots, and use auto-rotate feature.">
     <meta name="twitter:image" content="https://simplepanoramaviewer.app/PlayerApp/TemplateData/unity-logo-dark.png">
+
+    <!-- Structured data for search (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Simple Panorama Viewer",
+      "description": "Review offline panorama images in your browser. Load multiple images, switch between them, take snapshots, and use auto-rotate feature. Built with Unity WebGL.",
+      "url": "https://simplepanoramaviewer.app/",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
     <script>
       // Immediate redirect as fallback
       window.location.href = "PlayerApp/index.html";
